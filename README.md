@@ -5,6 +5,47 @@ A universal system for transforming chaotic datasets into coherent, high-density
 
 ---
 
+🌙 Quick Start (v1)
+
+NDRP v1 is now available! Here's how to use it:
+
+**1. Run the Pipeline**
+
+Transform raw text into NDRP-formatted JSONL:
+
+```bash
+python scripts/run_pipeline.py examples/sample_raw.txt output/refined_dataset.jsonl
+```
+
+**2. Validate the Output**
+
+Ensure your dataset conforms to the NDRP schema:
+
+```bash
+python validate.py output/refined_dataset.jsonl
+```
+
+**What's Implemented in v1:**
+
+- ✅ **Schema**: Complete NDRP entry schema (`schema/entry_schema.json`)
+- ✅ **Validator**: Canonical validator with semantic checks (`validator/validate.py`)
+- ✅ **Pipeline**: Three-stage pipeline (extraction → standardization → enhancement)
+- ✅ **Extraction**: Raw text loading, mode detection, preliminary entry creation
+- ✅ **Standardization**: Text normalization, schema population, field defaults
+- ✅ **Enhancement**: Stub for future improvements (currently passes through)
+
+**Current Limitations:**
+
+- Mode detection uses simple heuristics (keywords)
+- Enhancement stage is a stub (planned for v2)
+- No LFSL conversion yet (planned for future)
+- Single-line text processing only
+
+See the sections below for detailed information about NDRP's goals, terminology, and roadmap.
+
+
+---
+
 🌙 1. Overview
 
 The Nova Data Refinement Protocol (NDRP-1.0) is a unified standard designed to:

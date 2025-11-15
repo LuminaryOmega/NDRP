@@ -26,6 +26,15 @@ def detect_mode(text: str) -> ModeType:
     """
     text_lower = text.lower()
     
+    # Reasoning patterns (check first - more specific)
+    reasoning_markers = [
+        "because", "therefore", "thus", "hence",
+        "consequently", "as a result", "this means",
+        "let's think", "step by step", "first,", "second,"
+    ]
+    if any(marker in text_lower for marker in reasoning_markers):
+        return "reasoning"
+    
     # Instruction patterns
     instruction_markers = [
         "how to", "please", "can you", "could you", "would you",
@@ -35,15 +44,7 @@ def detect_mode(text: str) -> ModeType:
     if any(marker in text_lower for marker in instruction_markers):
         return "instruction"
     
-    # Conversation patterns
-    conversation_markers = [
-        "hello", "hi", "hey", "thanks", "thank you",
-        "goodbye", "bye", "see you", "nice to"
-    ]
-    if any(marker in text_lower for marker in conversation_markers):
-        return "conversation"
-    
-    # Narrative patterns
+    # Narrative patterns (check before conversation - more specific)
     narrative_markers = [
         "once upon", "story", "tale", "long ago",
         "there was", "there were", "in the beginning"
@@ -51,14 +52,13 @@ def detect_mode(text: str) -> ModeType:
     if any(marker in text_lower for marker in narrative_markers):
         return "narrative"
     
-    # Reasoning patterns
-    reasoning_markers = [
-        "because", "therefore", "thus", "hence",
-        "consequently", "as a result", "this means",
-        "let's think", "step by step", "first,", "second,"
+    # Conversation patterns
+    conversation_markers = [
+        "hello", "hi ", " hey ", "thanks", "thank you",
+        "goodbye", "bye", "see you", "nice to"
     ]
-    if any(marker in text_lower for marker in reasoning_markers):
-        return "reasoning"
+    if any(marker in text_lower for marker in conversation_markers):
+        return "conversation"
     
     # Emotion patterns
     emotion_markers = [
