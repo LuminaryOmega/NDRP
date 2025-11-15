@@ -47,12 +47,13 @@ def validate_entry(entry, index):
 def validate_file(jsonl_path):
     """
     Validates all entries in a .jsonl dataset file.
+    Returns the number of errors found.
     """
     jsonl_path = Path(jsonl_path)
 
     if not jsonl_path.exists():
         print(f"Error: File not found → {jsonl_path}")
-        return
+        return -1
 
     print(f"Validating: {jsonl_path}\n")
 
@@ -83,6 +84,8 @@ def validate_file(jsonl_path):
     print(f"Total entries: {total}")
     print(f"Valid entries: {valid}")
     print(f"Errors found: {errors_found}")
+    
+    return errors_found
 
 
 if __name__ == "__main__":
@@ -90,4 +93,7 @@ if __name__ == "__main__":
         print("Usage: python validate.py <dataset.jsonl>")
         sys.exit(1)
 
-    validate_file(sys.argv[1])
+    error_count = validate_file(sys.argv[1])
+    
+    # Return appropriate exit code based on validation results
+    sys.exit(0 if error_count == 0 else 1)
