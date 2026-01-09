@@ -13,7 +13,7 @@ Source of truth: `BASELINE.md` and the current pipeline behavior. These contract
 - **Content normalization**: Text is whitespace-normalized (`standardization/unify_style.py`).
 - **Metadata propagation**: When a `source` is present, it is emitted as `metadata.source_id`; no other metadata is added automatically.
 - **Enhancement stage**: `enhancement/enhance.py` returns the standardized entry unchanged.
-- **Validation rules** (`validator/validate.py` on `schema/entry_schema.json`):
+- **Validation rules** (`validator/validate.py` loads `schema/entry_schema.json` in the singular `schema/` directory; this remains the runtime authority even with the new `schemas/` contracts):
   - `content` must be non-empty.
   - `meaning_preserved` must be boolean.
   - `role` must be one of `user/assistant/system`.

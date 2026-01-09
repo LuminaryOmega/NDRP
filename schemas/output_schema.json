@@ -6,8 +6,9 @@
   "properties": {
     "role": {
       "type": "string",
-      "const": "user",
-      "description": "All entries are emitted as user role."
+      "enum": ["user", "assistant", "system"],
+      "default": "user",
+      "description": "Pipeline outputs set the role to user."
     },
     "content": {
       "type": "string",
@@ -43,7 +44,7 @@
     "context": {
       "type": ["string", "null"],
       "default": null,
-      "description": "Context placeholder; currently emitted as a required null field in every entry."
+      "description": "Context placeholder; pipeline emits this as null, but it is optional in the contract."
     },
     "meaning_preserved": {
       "type": "boolean",
