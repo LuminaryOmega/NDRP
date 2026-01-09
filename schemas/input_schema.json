@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "NDRP Pre-Standardization Entry",
   "type": "object",
-  "description": "Intermediate entry produced by extraction and accepted by standardization.",
+  "description": "Intermediate entry produced by extraction and accepted by standardization; no fields are required because the standardizer tolerates missing values and applies defaults.",
   "properties": {
     "content": {
       "type": "string",

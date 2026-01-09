@@ -43,7 +43,7 @@
     "context": {
       "type": ["string", "null"],
       "default": null,
-      "description": "Context placeholder; currently emitted as null."
+      "description": "Context placeholder; currently emitted as a required null field in every entry."
     },
     "meaning_preserved": {
       "type": "boolean",

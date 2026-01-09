@@ -18,7 +18,7 @@ Source of truth: `BASELINE.md` and the current pipeline behavior. These contract
   - `meaning_preserved` must be boolean.
   - `role` must be one of `user/assistant/system`.
   - `density_goal="high"` cannot coexist with `entropy_class="high"`.
-- **Schemas**: Runtime validation continues to use `schema/entry_schema.json`; `schemas/output_schema.json` captures the exact shape (including defaults) produced after standardization for documentation and contract reference.
+- **Schemas**: Runtime validation continues to use `schema/entry_schema.json`; `schemas/input_schema.json` documents tolerated pre-standardization entries and `schemas/output_schema.json` captures the exact shape (including defaults) produced after standardization for documentation and contract reference.
 
 ## Non-Guarantees (Not Promised)
 
