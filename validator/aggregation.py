@@ -55,7 +55,7 @@ def _extract_severity(result: Any) -> str:
     return "unknown"
 
 
-def _rating_from_score(score: int, counts: MutableMapping[str, int]) -> str:
+def _rating_from_score(score: int, counts: Mapping[str, int]) -> str:
     """
     Convert a hygiene score into a qualitative rating.
     """
@@ -92,7 +92,9 @@ def aggregate_validator_results(
         - severity_counts: dict of severities observed
         - penalties: explainable penalty breakdown
     """
-    weights = {**DEFAULT_SEVERITY_WEIGHTS, **(severity_weights or {})}
+    weights = dict(DEFAULT_SEVERITY_WEIGHTS)
+    if severity_weights:
+        weights.update(severity_weights)
 
     severity_counts: Counter[str] = Counter()
     penalty_by_severity: MutableMapping[str, int] = defaultdict(
