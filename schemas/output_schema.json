@@ -91,7 +91,6 @@
     "content",
     "intent",
     "mode",
-    "context",
     "meaning_preserved",
     "density_goal",
     "entropy_class"

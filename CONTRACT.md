@@ -17,8 +17,9 @@ Source of truth: `BASELINE.md` and the current pipeline behavior. These contract
   - `content` must be non-empty.
   - `meaning_preserved` must be boolean.
   - `role` must be one of `user/assistant/system`.
+  - Validator permits `assistant/system`, but the pipeline emits only `user` and `schemas/output_schema.json` encodes that default.
   - `density_goal="high"` cannot coexist with `entropy_class="high"`.
-- **Schemas**: Runtime validation continues to use `schema/entry_schema.json`; `schemas/input_schema.json` documents tolerated pre-standardization entries and `schemas/output_schema.json` captures the exact shape (including defaults) produced after standardization for documentation and contract reference.
+- **Schemas**: Runtime validation continues to use the existing `schema/entry_schema.json` (singular directory). The new documentation contracts live in `schemas/` (`input_schema.json`, `output_schema.json`) and do not replace the runtime validator schema.
 
 ## Non-Guarantees (Not Promised)
 
