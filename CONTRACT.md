@@ -14,6 +14,7 @@ Source of truth: `BASELINE.md` and the current pipeline behavior. These contract
 - **Metadata propagation**: When a `source` is present, it is emitted as `metadata.source_id`; no other metadata is added automatically.
 - **Enhancement stage**: `enhancement/enhance.py` returns the standardized entry unchanged.
 - **Validation rules**: `validator/validate.py` enforces `schema/entry_schema.json` plus semantic checks: `content` must be non-empty, `meaning_preserved` must be boolean, `role` must be one of `user/assistant/system`, and `density_goal="high"` cannot coexist with `entropy_class="high"`.
+- **Schemas**: Runtime validation continues to use `schema/entry_schema.json`; `schemas/output_schema.json` captures the exact shape (including defaults) produced after standardization for documentation and contract reference.
 
 ## Non-Guarantees (Not Promised)
 
