@@ -15,7 +15,7 @@ Factual inventory of the repository as it exists. Describes current modules, res
 
 - **Extraction (Stage 1)**
   - `extraction/loader.py`: Streams UTF-8 text files line by line, strips whitespace, and drops empty lines.
-  - `extraction/classifier.py`: Heuristic mode detector returning one of `instruction | conversation | narrative | reasoning | context | meta | emotion | other` based on keyword lists (reasoning > instruction > narrative > conversation > emotion > meta > other).
+  - `extraction/classifier.py`: Heuristic mode detector returning one of `instruction | conversation | narrative | reasoning | context | meta | emotion` or intermediate label `other` (not part of the schema) based on keyword lists (reasoning > instruction > narrative > conversation > emotion > meta > other).
   - `extraction/metadata.py`: `ExtractionMetadata` dataclass for source and mode.
   - `extraction/extractor.py`: Wraps lines into `PreNDRPEntry` objects (content + metadata) and exposes `extract_entries_as_dicts` for downstream use.
 
@@ -50,7 +50,7 @@ Factual inventory of the repository as it exists. Describes current modules, res
   - Conversation markers include greetings/thanks with spacing heuristics (e.g., `" hey "`).
   - Emotion markers include “feel”, “happy”, “sad”, “love”, etc.
   - Meta markers reference the conversation (“this conversation”, “our discussion”).
-  - Anything unmatched returns `"other"`, which `rewrite.py` remaps to `"context"`.
+  - Anything unmatched returns `"other"`; `rewrite.py` remaps this non-schema label to `"context"` before validation.
 - Default field values applied during standardization: `role="user"`, `context=None`, `meaning_preserved=True`, `density_goal="high"`, `entropy_class="low"`.
 - Intent strings are derived solely from the detected mode (e.g., `"instruction"` → “request information or action”).
 - `metadata.source_id` is set to the input filename when provided to the extractor; no other metadata is auto-populated.
