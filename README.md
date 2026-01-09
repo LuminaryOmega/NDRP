@@ -23,6 +23,9 @@ Ensure your dataset conforms to the NDRP schema:
 
 ```bash
 python validate.py output/refined_dataset.jsonl
+
+# or use the hygiene-scoring CLI
+python ndrpy.py validate output/refined_dataset.jsonl --output report.json --redact
 ```
 
 **What's Implemented in v1:**
