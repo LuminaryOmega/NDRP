@@ -41,22 +41,25 @@
       ]
     },
     "context": {
-      "type": "null",
-      "description": "Context placeholder; currently always null."
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Context placeholder; currently emitted as null."
     },
     "meaning_preserved": {
       "type": "boolean",
-      "const": true,
-      "description": "Semantic preservation flag enforced as true."
+      "default": true,
+      "description": "Semantic preservation flag emitted as true."
     },
     "density_goal": {
       "type": "string",
-      "const": "high",
+      "enum": ["low", "medium", "high"],
+      "default": "high",
       "description": "Density default applied during standardization."
     },
     "entropy_class": {
       "type": "string",
-      "const": "low",
+      "enum": ["low", "medium", "high"],
+      "default": "low",
       "description": "Entropy default applied during standardization."
     },
     "metadata": {
