@@ -12,23 +12,16 @@ from typing import Any, Iterable, Mapping, MutableMapping, Optional
 
 # Default weights used to penalize findings by severity.
 DEFAULT_SEVERITY_WEIGHTS: Mapping[str, int] = {
-    "critical": 50,
-    "high": 25,
-    "medium": 10,
-    "low": 5,
-    "info": 0,
+    "critical": 25,
+    "high": 10,
+    "medium": 3,
+    "low": 1,
 }
 
 CRITICAL_SEVERITY = "critical"
 
 # Fallback penalty applied when a result has an unrecognized severity label.
-UNKNOWN_SEVERITY_WEIGHT = 10
-
-# Rating thresholds, expressed as minimum hygiene score required for each tier.
-RATING_THRESHOLDS: Mapping[str, int] = {
-    "clean": 90,
-    "needs_attention": 60,
-}
+UNKNOWN_SEVERITY_WEIGHT = 3
 
 MAX_SCORE = 100
 
@@ -43,29 +36,62 @@ def _extract_severity(result: Any) -> str:
     - Object with a ``severity`` attribute
     - A bare string interpreted directly as the severity label
     """
+    severity_value: Optional[str] = None
+
     if isinstance(result, Mapping) and "severity" in result:
-        return str(result["severity"])
+        severity_value = str(result["severity"])
 
-    if hasattr(result, "severity"):
-        return str(getattr(result, "severity"))
+    if severity_value is None and hasattr(result, "severity"):
+        severity_value = str(getattr(result, "severity"))
 
-    if isinstance(result, str):
-        return result
+    if severity_value is None and isinstance(result, str):
+        severity_value = result
 
-    return "unknown"
+    return (severity_value or "unknown").lower()
 
 
-def _rating_from_score(score: int, counts: Mapping[str, int]) -> str:
+def _rating_from_score(score: int) -> str:
     """
     Convert a hygiene score into a qualitative rating.
     """
-    if score >= RATING_THRESHOLDS["clean"] and counts.get(CRITICAL_SEVERITY, 0) == 0:
+    if score >= 90:
         return "clean"
 
-    if score >= RATING_THRESHOLDS["needs_attention"]:
+    if score >= 70:
         return "needs_attention"
 
+    if score >= 40:
+        return "high_risk"
+
     return "unsafe"
+
+
+def _build_summary(rating: str, counts: Mapping[str, int]) -> Iterable[str]:
+    """
+    Provide short, deterministic summary messages derived from findings.
+    """
+    primary_messages = {
+        "critical": "Critical issues detected",
+        "high": "High-severity issues detected",
+        "medium": "Medium-severity issues detected",
+        "low": "Low-severity findings detected",
+    }
+
+    secondary_messages = {
+        "clean": "Data appears ready for use",
+        "needs_attention": "Data suitable for internal use only",
+        "high_risk": "Remediation recommended before broader use",
+        "unsafe": "Data unsafe for processing until remediated",
+    }
+
+    for severity in ("critical", "high", "medium", "low"):
+        if counts.get(severity, 0) > 0:
+            yield primary_messages[severity]
+            break
+    else:
+        yield "No issues detected"
+
+    yield secondary_messages[rating]
 
 
 def aggregate_validator_results(
@@ -88,9 +114,10 @@ def aggregate_validator_results(
     -------
     dict with keys:
         - hygiene_score: int in [0, 100]
-        - rating: str, one of {"clean", "needs_attention", "unsafe"}
+        - rating: str, one of {"clean", "needs_attention", "high_risk", "unsafe"}
         - severity_counts: dict of severities observed
         - penalties: explainable penalty breakdown
+        - summary: short human-readable statements derived from findings
     """
     weights = dict(DEFAULT_SEVERITY_WEIGHTS)
     if severity_weights:
@@ -112,7 +139,7 @@ def aggregate_validator_results(
         total_penalty += weight
 
     hygiene_score = max(0, MAX_SCORE - total_penalty)
-    rating = _rating_from_score(hygiene_score, severity_counts)
+    rating = _rating_from_score(hygiene_score)
 
     severity_counts_output = dict(severity_counts)
     for severity in weights:
@@ -129,4 +156,5 @@ def aggregate_validator_results(
             "unknown_weight": UNKNOWN_SEVERITY_WEIGHT,
         },
         "max_score": MAX_SCORE,
+        "summary": list(_build_summary(rating, severity_counts_output)),
     }
