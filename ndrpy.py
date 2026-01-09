@@ -14,8 +14,9 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional
 from validator.aggregation import aggregate_validator_results
 from validator.validate import validate_entry
 
+# Validation errors do not currently expose severities; map them to "high"
+# (10-point weight) for deterministic scoring.
 DEFAULT_ERROR_SEVERITY = "high"
-PARSE_ERROR_SEVERITY = "critical"
 REDACTED_PLACEHOLDER = "[REDACTED]"
 
 
@@ -69,7 +70,8 @@ def _load_entries(input_path: Path) -> List[Dict[str, Any]]:
 def _collect_validation_results(entries: Iterable[Mapping[str, Any]]) -> List[Dict[str, Any]]:
     """
     Run existing validation logic on provided entries and return structured
-    results annotated with severities.
+    results annotated with severities. All findings are tagged as "high" to
+    align with deterministic hygiene scoring until validators emit severity.
     """
     results: List[Dict[str, Any]] = []
 
