@@ -15,7 +15,7 @@ from validator.aggregation import aggregate_validator_results
 from validator.validate import validate_entry
 
 # Validation errors do not currently expose severities; map them to "high"
-# (10-point weight) for deterministic scoring.
+# (10-point penalty in the default aggregation weights) for deterministic scoring.
 DEFAULT_ERROR_SEVERITY = "high"
 REDACTED_PLACEHOLDER = "[REDACTED]"
 
@@ -161,7 +161,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     validate_parser = subparsers.add_parser("validate", help="Validate data and compute hygiene score")
     validate_parser.add_argument("path", help="Path to JSON/JSONL input")
-    validate_parser.add_argument("--redact", action="store_true", help="Apply redaction to report payload")
+    validate_parser.add_argument(
+        "--redact",
+        action="store_true",
+        help="Apply redaction to report payload (content/context/reasoning_expanded)",
+    )
     validate_parser.add_argument(
         "--output",
         "-o",

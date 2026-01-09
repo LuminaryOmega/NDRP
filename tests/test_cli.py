@@ -63,6 +63,7 @@ class CLITests(unittest.TestCase):
 
     def test_cli_exits_with_errors_on_invalid_entry(self):
         invalid_entry = dict(VALID_ENTRY)
+        # Remove a required field to trigger schema validation failure.
         invalid_entry.pop("intent")
 
         with tempfile.TemporaryDirectory() as tmpdir:
