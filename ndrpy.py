@@ -9,7 +9,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping
+from typing import Any, Dict, Iterable, List, Mapping, Optional
 
 from validator.aggregation import aggregate_validator_results
 from validator.validate import validate_entry
@@ -74,16 +74,6 @@ def _collect_validation_results(entries: Iterable[Mapping[str, Any]]) -> List[Di
     results: List[Dict[str, Any]] = []
 
     for index, entry in enumerate(entries, start=1):
-        if not isinstance(entry, Mapping):
-            results.append(
-                {
-                    "entry": index,
-                    "severity": PARSE_ERROR_SEVERITY,
-                    "message": "Entry must be a JSON object",
-                }
-            )
-            continue
-
         errors = validate_entry(entry, index)
         for err in errors:
             results.append({"entry": index, "severity": DEFAULT_ERROR_SEVERITY, "message": err})
@@ -97,10 +87,6 @@ def _redact_entries(entries: Iterable[Mapping[str, Any]]) -> List[Dict[str, Any]
     """
     redacted: List[Dict[str, Any]] = []
     for entry in entries:
-        if not isinstance(entry, Mapping):
-            redacted.append({"value": REDACTED_PLACEHOLDER})
-            continue
-
         sanitized = dict(entry)
         for field in ("content", "context", "reasoning_expanded"):
             if field in sanitized:
@@ -184,7 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: List[str] | None = None) -> int:
+def main(argv: Optional[List[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     return args.func(args)
