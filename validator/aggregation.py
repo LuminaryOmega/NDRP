@@ -19,6 +19,8 @@ DEFAULT_SEVERITY_WEIGHTS: Mapping[str, int] = {
     "info": 0,
 }
 
+CRITICAL_SEVERITY = "critical"
+
 # Fallback penalty applied when a result has an unrecognized severity label.
 UNKNOWN_SEVERITY_WEIGHT = 10
 
@@ -57,7 +59,7 @@ def _rating_from_score(score: int, counts: MutableMapping[str, int]) -> str:
     """
     Convert a hygiene score into a qualitative rating.
     """
-    if score >= RATING_THRESHOLDS["clean"] and counts.get("critical", 0) == 0:
+    if score >= RATING_THRESHOLDS["clean"] and counts.get(CRITICAL_SEVERITY, 0) == 0:
         return "clean"
 
     if score >= RATING_THRESHOLDS["needs_attention"]:
@@ -104,7 +106,10 @@ def aggregate_validator_results(
         weight = weights.get(severity, UNKNOWN_SEVERITY_WEIGHT)
 
         severity_counts[severity] += 1
-        penalty_by_severity[severity] = penalty_by_severity.get(severity, 0) + weight
+        if severity not in penalty_by_severity:
+            penalty_by_severity[severity] = 0
+
+        penalty_by_severity[severity] += weight
         total_penalty += weight
 
     hygiene_score = max(0, MAX_SCORE - total_penalty)
