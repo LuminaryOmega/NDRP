@@ -13,6 +13,10 @@ class AggregationTests(unittest.TestCase):
 
         self.assertEqual(result["hygiene_score"], 100)
         self.assertEqual(result["rating"], "clean")
+        self.assertEqual(
+            result["summary"],
+            ["No issues detected", "Data appears ready for use"],
+        )
         for severity in DEFAULT_SEVERITY_WEIGHTS:
             self.assertEqual(result["severity_counts"].get(severity, 0), 0)
 
@@ -25,8 +29,12 @@ class AggregationTests(unittest.TestCase):
 
         aggregated = aggregate_validator_results(results)
 
-        self.assertEqual(aggregated["hygiene_score"], 60)  # 25 + 10 + 5 penalty
+        self.assertEqual(aggregated["hygiene_score"], 86)  # 10 + 3 + 1 penalty
         self.assertEqual(aggregated["rating"], "needs_attention")
+        self.assertEqual(
+            aggregated["summary"],
+            ["High-severity issues detected", "Data suitable for internal use only"],
+        )
         self.assertEqual(aggregated["severity_counts"]["high"], 1)
         self.assertEqual(aggregated["severity_counts"]["medium"], 1)
         self.assertEqual(aggregated["severity_counts"]["low"], 1)
@@ -42,11 +50,15 @@ class AggregationTests(unittest.TestCase):
             UNKNOWN_SEVERITY_WEIGHT,
         )
 
-    def test_multiple_high_results_become_unsafe(self):
-        aggregated = aggregate_validator_results(["high", "high", "high"])
+    def test_multiple_critical_results_clamp_to_unsafe(self):
+        aggregated = aggregate_validator_results(["critical"] * 5)
 
         self.assertEqual(aggregated["rating"], "unsafe")
-        self.assertLess(aggregated["hygiene_score"], 60)
+        self.assertEqual(aggregated["hygiene_score"], 0)
+        self.assertEqual(
+            aggregated["summary"][0],
+            "Critical issues detected",
+        )
 
 
 if __name__ == "__main__":
