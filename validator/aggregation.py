@@ -7,7 +7,7 @@ single pure function, ``aggregate_validator_results``, which accepts an
 iterable of validator outputs and returns an explainable score, rating, and
 severity counts.
 """
-from collections import Counter
+from collections import Counter, defaultdict
 from typing import Any, Iterable, Mapping, MutableMapping, Optional
 
 # Default weights used to penalize findings by severity.
@@ -95,7 +95,9 @@ def aggregate_validator_results(
     weights = {**DEFAULT_SEVERITY_WEIGHTS, **(severity_weights or {})}
 
     severity_counts: Counter[str] = Counter()
-    penalty_by_severity: MutableMapping[str, int] = {severity: 0 for severity in weights}
+    penalty_by_severity: MutableMapping[str, int] = defaultdict(
+        int, {severity: 0 for severity in weights}
+    )
 
     total_penalty = 0
 
@@ -104,18 +106,15 @@ def aggregate_validator_results(
         weight = weights.get(severity, UNKNOWN_SEVERITY_WEIGHT)
 
         severity_counts[severity] += 1
-        penalty_by_severity[severity] = penalty_by_severity.get(severity, 0) + weight
+        penalty_by_severity[severity] += weight
         total_penalty += weight
 
     hygiene_score = max(0, MAX_SCORE - total_penalty)
     rating = _rating_from_score(hygiene_score, severity_counts)
 
-    severity_counts_output = {
-        severity: severity_counts.get(severity, 0) for severity in weights
-    }
-    for severity, count in severity_counts.items():
-        if severity not in severity_counts_output:
-            severity_counts_output[severity] = count
+    severity_counts_output = dict(severity_counts)
+    for severity in weights:
+        severity_counts_output.setdefault(severity, 0)
 
     return {
         "hygiene_score": hygiene_score,
