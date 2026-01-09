@@ -89,7 +89,7 @@ def aggregate_validator_results(
     dict with keys:
         - hygiene_score: int in [0, 100]
         - rating: str, one of {"clean", "needs_attention", "unsafe"}
-        - severity_counts: Counter of severities observed
+        - severity_counts: dict of severities observed
         - penalties: explainable penalty breakdown
     """
     weights = {**DEFAULT_SEVERITY_WEIGHTS, **(severity_weights or {})}
